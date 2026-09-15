@@ -5,7 +5,7 @@ import "./globals.css";
 // One typeface for the whole site; weight and size carry the hierarchy.
 const fraunces = Fraunces({
   subsets: ["latin"],
-  axes: ["SOFT", "opsz"],
+  axes: ["SOFT", "WONK", "opsz"],
   style: ["normal", "italic"],
   variable: "--font-display",
 });

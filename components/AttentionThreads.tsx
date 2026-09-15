@@ -7,9 +7,9 @@ import * as THREE from "three";
 // Threads drift like silk across the hero; near the cursor they bend toward it,
 // the way attention weights gather on a query.
 
-const THREAD_COUNT = 30;
+const THREAD_COUNT = 22;
 const SEGMENTS = 96;
-const POLLEN_COUNT = 90;
+const POLLEN_COUNT = 40;
 
 type Pointer = { x: number; y: number; active: boolean };
 
@@ -34,12 +34,11 @@ function mulberry32(seed: number) {
   };
 }
 
-// Tuned to show against the misty rose hero.
+// Kept quiet so the hero reads as a backdrop, not a feature.
 const PALETTE = [
-  { color: "#7f5836", weight: 0.35 }, // aloewood
-  { color: "#aa7f66", weight: 0.3 }, // milk tea
-  { color: "#e0797b", weight: 0.2 }, // sakura, a shade deeper so it reads on pink
-  { color: "#ffffff", weight: 0.15 }, // white highlights
+  { color: "#aa7f66", weight: 0.45 }, // milk tea
+  { color: "#7f5836", weight: 0.3 }, // aloewood
+  { color: "#e0797b", weight: 0.25 }, // sakura, a shade deeper so it reads on the wash
 ];
 
 function pickColor(r: number) {
@@ -65,7 +64,7 @@ function Threads({ pointer, animate }: { pointer: RefObject<Pointer>; animate: b
       speed: 0.12 + rand() * 0.22,
       phase: rand() * Math.PI * 2,
       color: pickColor(rand()),
-      opacity: 0.22 + rand() * 0.4,
+      opacity: 0.1 + rand() * 0.22,
     }));
   }, []);
 
@@ -186,10 +185,10 @@ function Pollen({ animate }: { animate: boolean }) {
       </bufferGeometry>
       <pointsMaterial
         map={texture}
-        color="#ffffff"
-        size={0.11}
+        color="#aa7f66"
+        size={0.06}
         transparent
-        opacity={0.85}
+        opacity={0.4}
         depthWrite={false}
         sizeAttenuation
       />
