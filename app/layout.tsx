@@ -1,17 +1,13 @@
 import type { Metadata } from "next";
-import { Fraunces, Instrument_Sans } from "next/font/google";
+import { Fraunces } from "next/font/google";
 import "./globals.css";
 
-const display = Fraunces({
+// One typeface for the whole site; weight and size carry the hierarchy.
+const fraunces = Fraunces({
   subsets: ["latin"],
   axes: ["SOFT", "opsz"],
   style: ["normal", "italic"],
   variable: "--font-display",
-});
-
-const body = Instrument_Sans({
-  subsets: ["latin"],
-  variable: "--font-body",
 });
 
 export const metadata: Metadata = {
@@ -26,7 +22,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${display.variable} ${body.variable}`}>
+    <html lang="en" className={fraunces.variable}>
       <body>{children}</body>
     </html>
   );

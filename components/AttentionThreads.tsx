@@ -34,10 +34,11 @@ function mulberry32(seed: number) {
   };
 }
 
+// Tuned to glow against the chocolate hero.
 const PALETTE = [
-  { color: "#c9973a", weight: 0.5 }, // gold, same family as the stole
-  { color: "#8a5a44", weight: 0.3 }, // milk chocolate
-  { color: "#e2aeb0", weight: 0.2 }, // blush
+  { color: "#d4a23f", weight: 0.55 }, // gold, same family as the stole
+  { color: "#f0c7c4", weight: 0.3 }, // blush
+  { color: "#b07a60", weight: 0.15 }, // milk chocolate
 ];
 
 function pickColor(r: number) {
@@ -63,7 +64,7 @@ function Threads({ pointer, animate }: { pointer: RefObject<Pointer>; animate: b
       speed: 0.12 + rand() * 0.22,
       phase: rand() * Math.PI * 2,
       color: pickColor(rand()),
-      opacity: 0.16 + rand() * 0.32,
+      opacity: 0.22 + rand() * 0.4,
     }));
   }, []);
 
