@@ -3,6 +3,7 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, useState, type RefObject } from "react";
 import * as THREE from "three";
+import { LOOK_EVENT } from "./LookLede";
 
 // Threads drift like silk across the hero; near the cursor they bend toward it,
 // the way attention weights gather on a query.
@@ -69,11 +70,20 @@ function useIsDark() {
   return dark;
 }
 
-function Threads({ pointer, animate, dark }: { pointer: RefObject<Pointer>; animate: boolean; dark: boolean }) {
+type ThreadsProps = {
+  pointer: RefObject<Pointer>;
+  look: RefObject<boolean>;
+  container: RefObject<HTMLDivElement | null>;
+  animate: boolean;
+  dark: boolean;
+};
+
+function Threads({ pointer, look, container, animate, dark }: ThreadsProps) {
   const viewport = useThree((s) => s.viewport);
   const invalidate = useThree((s) => s.invalidate);
   const focus = useRef(new THREE.Vector2(0, 0));
   const pull = useRef(0);
+  const lookMix = useRef(0);
 
   const threads = useMemo<Thread[]>(() => {
     const rand = mulberry32(7);
@@ -99,12 +109,15 @@ function Threads({ pointer, animate, dark }: { pointer: RefObject<Pointer>; anim
     [threads],
   );
 
+  const baseOpacity = useRef<number[]>([]);
+
   useEffect(() => {
     lines.forEach((line, i) => {
       const t = threads[i];
       const material = line.material as THREE.LineBasicMaterial;
       material.color.set(dark ? SWATCHES[t.swatch].dark : SWATCHES[t.swatch].light);
-      material.opacity = dark ? t.opacity * 1.4 : t.opacity;
+      baseOpacity.current[i] = dark ? t.opacity * 1.4 : t.opacity;
+      material.opacity = baseOpacity.current[i];
     });
     invalidate();
   }, [dark, lines, threads, invalidate]);
@@ -126,16 +139,38 @@ function Threads({ pointer, animate, dark }: { pointer: RefObject<Pointer>; anim
     const h = viewport.height;
 
     const p = pointer.current;
-    const k = Math.min(1, dt * 3);
-    focus.current.x += ((p.x * viewport.width) / 2 - focus.current.x) * k;
-    focus.current.y += ((p.y * viewport.height) / 2 - focus.current.y) * k;
-    pull.current += ((p.active ? 1 : 0) - pull.current) * Math.min(1, dt * 1.5);
+    const looking = look.current;
+    let tx = (p.x * viewport.width) / 2;
+    let ty = (p.y * viewport.height) / 2;
+
+    // While the lede phrase is hovered, every thread is drawn to the portrait instead of the cursor.
+    if (looking) {
+      const el = container.current;
+      const portrait = document.querySelector(".portrait-arch");
+      if (el && portrait) {
+        const r = el.getBoundingClientRect();
+        const t = portrait.getBoundingClientRect();
+        tx = ((((t.left + t.width / 2 - r.left) / r.width) * 2 - 1) * viewport.width) / 2;
+        ty = (-(((t.top + t.height / 2 - r.top) / r.height) * 2 - 1) * viewport.height) / 2;
+      }
+    }
+
+    const k = Math.min(1, dt * (looking ? 2 : 3));
+    focus.current.x += (tx - focus.current.x) * k;
+    focus.current.y += (ty - focus.current.y) * k;
+    pull.current += ((looking || p.active ? 1 : 0) - pull.current) * Math.min(1, dt * 1.5);
+    lookMix.current += ((looking ? 1 : 0) - lookMix.current) * Math.min(1, dt * 2);
 
     const fx = focus.current.x;
     const fy = focus.current.y;
+    const m = lookMix.current;
+    const reachX = 2.4 + m * 14; // wider, stronger bend when gathering on the portrait
+    const reachY = 5 + m * 20;
+    const strength = 0.5 + m * 0.45;
 
     for (let i = 0; i < lines.length; i++) {
       const t = threads[i];
+      (lines[i].material as THREE.LineBasicMaterial).opacity = (baseOpacity.current[i] ?? t.opacity) * (1 + 1.2 * m);
       const attr = lines[i].geometry.attributes.position as THREE.BufferAttribute;
       const arr = attr.array as Float32Array;
       for (let j = 0; j < SEGMENTS; j++) {
@@ -146,8 +181,8 @@ function Threads({ pointer, animate, dark }: { pointer: RefObject<Pointer>; anim
           t.amp * 0.35 * Math.sin(x * t.freq * 2.3 - time * t.speed * 0.7 + t.phase * 1.7);
         const dx = x - fx;
         const dy = y - fy;
-        const g = Math.exp(-(dx * dx) / 2.4 - (dy * dy) / 5);
-        y += (fy - y) * g * 0.5 * pull.current;
+        const g = Math.exp(-(dx * dx) / reachX - (dy * dy) / reachY);
+        y += (fy - y) * g * strength * pull.current;
         arr[j * 3] = x;
         arr[j * 3 + 1] = y;
         arr[j * 3 + 2] = 0;
@@ -229,8 +264,17 @@ function Pollen({ animate, dark }: { animate: boolean; dark: boolean }) {
 export default function AttentionThreads() {
   const container = useRef<HTMLDivElement>(null);
   const pointer = useRef<Pointer>({ x: 0, y: 0, active: false });
+  const look = useRef(false);
   const [animate, setAnimate] = useState(true);
   const dark = useIsDark();
+
+  useEffect(() => {
+    const onLook = (e: Event) => {
+      look.current = Boolean((e as CustomEvent<boolean>).detail);
+    };
+    window.addEventListener(LOOK_EVENT, onLook);
+    return () => window.removeEventListener(LOOK_EVENT, onLook);
+  }, []);
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -271,7 +315,7 @@ export default function AttentionThreads() {
         gl={{ alpha: true, antialias: true }}
         frameloop={animate ? "always" : "demand"}
       >
-        <Threads pointer={pointer} animate={animate} dark={dark} />
+        <Threads pointer={pointer} look={look} container={container} animate={animate} dark={dark} />
         <Pollen animate={animate} dark={dark} />
       </Canvas>
     </div>

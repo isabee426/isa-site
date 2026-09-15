@@ -1,6 +1,8 @@
+import LookLede from "@/components/LookLede";
 import Portrait from "@/components/Portrait";
 import ThemeToggle from "@/components/ThemeToggle";
 import ThreadsBackdrop from "@/components/ThreadsBackdrop";
+import TieBreakFigure from "@/components/TieBreakFigure";
 import {
   about,
   experience,
@@ -68,10 +70,10 @@ export default function Home() {
             <h1>
               Isabella <em>Beltran</em> Shapland
             </h1>
-            <p className="lede">
-              I work on {profile.focus[0]}, {profile.focus[1]}, and {profile.focus[2]}. Lately that means
-              teaching vision-language models to keep looking at the image.
-            </p>
+            <LookLede
+              before={`I work on ${profile.focus[0]}, ${profile.focus[1]}, and ${profile.focus[2]}. Lately that means teaching vision-language models to `}
+              phrase="keep looking at the image"
+            />
             <p className="seeking">{profile.seeking}</p>
             <nav className="contact" aria-label="Contact">
               {contact.map((l) => (
@@ -125,6 +127,7 @@ export default function Home() {
                 <Authors people={pub.authors} />
                 <p className="venue">{pub.venue}</p>
                 <p>{pub.summary}</p>
+                {pub.figure === "tiebreak" && <TieBreakFigure />}
                 <ul className="chips">
                   {pub.highlights.map((h) => (
                     <li key={h}>{h}</li>

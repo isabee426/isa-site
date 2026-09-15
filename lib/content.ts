@@ -57,6 +57,7 @@ export type Publication = {
   summary: string;
   highlights: string[];
   links: { label: string; href: string }[];
+  figure?: "tiebreak";
 };
 
 export const publications: Publication[] = [
@@ -72,6 +73,7 @@ export const publications: Publication[] = [
       "Reasoning VLMs trained with GRPO can fall into repetition collapse when their attention drifts off the image. A frozen probe on visual attention (0.796 AUROC) is used only to break reward ties, never to override task correctness. It also recovers a learning signal from fully tied groups, where vanilla GRPO gives no gradient at all.",
     highlights: ["+3.4 in-domain accuracy", "+6.3 on MathVision", "~⅓ less repetition", "Qwen3-VL-8B, full fine-tune"],
     links: [{ label: "pdf", href: links.ftGrpoPreprint }],
+    figure: "tiebreak",
   },
   {
     title: "ARC-AGI v2: Explainable Reasoning Traces for GPT-5-Nano; The Execution Bottleneck",
