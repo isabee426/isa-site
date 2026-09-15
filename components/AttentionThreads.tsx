@@ -19,7 +19,7 @@ type Thread = {
   freq: number;
   speed: number;
   phase: number;
-  color: string;
+  swatch: number;
   opacity: number;
 };
 
@@ -34,24 +34,44 @@ function mulberry32(seed: number) {
   };
 }
 
-// Kept quiet so the hero reads as a backdrop, not a feature.
-const PALETTE = [
-  { color: "#aa7f66", weight: 0.45 }, // milk tea
-  { color: "#7f5836", weight: 0.3 }, // aloewood
-  { color: "#e0797b", weight: 0.25 }, // sakura, a shade deeper so it reads on the wash
+// Kept quiet so the hero reads as a backdrop, not a feature. Same swatch slots in both themes.
+const SWATCHES = [
+  { weight: 0.45, light: "#aa7f66", dark: "#aa7f66" }, // milk tea
+  { weight: 0.3, light: "#7f5836", dark: "#f2cfca" }, // aloewood / misty rose
+  { weight: 0.25, light: "#e0797b", dark: "#ec9c9d" }, // sakura
 ];
 
-function pickColor(r: number) {
+function pickSwatch(r: number) {
   let acc = 0;
-  for (const p of PALETTE) {
-    acc += p.weight;
-    if (r < acc) return p.color;
+  for (let i = 0; i < SWATCHES.length; i++) {
+    acc += SWATCHES[i].weight;
+    if (r < acc) return i;
   }
-  return PALETTE[0].color;
+  return 0;
 }
 
-function Threads({ pointer, animate }: { pointer: RefObject<Pointer>; animate: boolean }) {
+// Tracks the effective theme: an explicit data-theme choice, else the system setting.
+function useIsDark() {
+  const [dark, setDark] = useState(false);
+  useEffect(() => {
+    const root = document.documentElement;
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const read = () => setDark(root.dataset.theme ? root.dataset.theme === "dark" : mq.matches);
+    read();
+    const observer = new MutationObserver(read);
+    observer.observe(root, { attributes: true, attributeFilter: ["data-theme"] });
+    mq.addEventListener("change", read);
+    return () => {
+      observer.disconnect();
+      mq.removeEventListener("change", read);
+    };
+  }, []);
+  return dark;
+}
+
+function Threads({ pointer, animate, dark }: { pointer: RefObject<Pointer>; animate: boolean; dark: boolean }) {
   const viewport = useThree((s) => s.viewport);
+  const invalidate = useThree((s) => s.invalidate);
   const focus = useRef(new THREE.Vector2(0, 0));
   const pull = useRef(0);
 
@@ -63,7 +83,7 @@ function Threads({ pointer, animate }: { pointer: RefObject<Pointer>; animate: b
       freq: 0.25 + rand() * 0.5,
       speed: 0.12 + rand() * 0.22,
       phase: rand() * Math.PI * 2,
-      color: pickColor(rand()),
+      swatch: pickSwatch(rand()),
       opacity: 0.1 + rand() * 0.22,
     }));
   }, []);
@@ -73,11 +93,21 @@ function Threads({ pointer, animate }: { pointer: RefObject<Pointer>; animate: b
       threads.map((t) => {
         const geometry = new THREE.BufferGeometry();
         geometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(SEGMENTS * 3), 3));
-        const material = new THREE.LineBasicMaterial({ color: t.color, transparent: true, opacity: t.opacity });
+        const material = new THREE.LineBasicMaterial({ transparent: true, opacity: t.opacity });
         return new THREE.Line(geometry, material);
       }),
     [threads],
   );
+
+  useEffect(() => {
+    lines.forEach((line, i) => {
+      const t = threads[i];
+      const material = line.material as THREE.LineBasicMaterial;
+      material.color.set(dark ? SWATCHES[t.swatch].dark : SWATCHES[t.swatch].light);
+      material.opacity = dark ? t.opacity * 1.4 : t.opacity;
+    });
+    invalidate();
+  }, [dark, lines, threads, invalidate]);
 
   useEffect(
     () => () => {
@@ -135,7 +165,7 @@ function Threads({ pointer, animate }: { pointer: RefObject<Pointer>; animate: b
   );
 }
 
-function Pollen({ animate }: { animate: boolean }) {
+function Pollen({ animate, dark }: { animate: boolean; dark: boolean }) {
   const viewport = useThree((s) => s.viewport);
   const ref = useRef<THREE.Points>(null);
 
@@ -185,10 +215,10 @@ function Pollen({ animate }: { animate: boolean }) {
       </bufferGeometry>
       <pointsMaterial
         map={texture}
-        color="#aa7f66"
+        color={dark ? "#ec9c9d" : "#aa7f66"}
         size={0.06}
         transparent
-        opacity={0.4}
+        opacity={dark ? 0.55 : 0.4}
         depthWrite={false}
         sizeAttenuation
       />
@@ -200,6 +230,7 @@ export default function AttentionThreads() {
   const container = useRef<HTMLDivElement>(null);
   const pointer = useRef<Pointer>({ x: 0, y: 0, active: false });
   const [animate, setAnimate] = useState(true);
+  const dark = useIsDark();
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -240,8 +271,8 @@ export default function AttentionThreads() {
         gl={{ alpha: true, antialias: true }}
         frameloop={animate ? "always" : "demand"}
       >
-        <Threads pointer={pointer} animate={animate} />
-        <Pollen animate={animate} />
+        <Threads pointer={pointer} animate={animate} dark={dark} />
+        <Pollen animate={animate} dark={dark} />
       </Canvas>
     </div>
   );
