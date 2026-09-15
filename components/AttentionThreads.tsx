@@ -34,11 +34,12 @@ function mulberry32(seed: number) {
   };
 }
 
-// Tuned to glow against the dark chocolate hero.
+// Tuned to show against the misty rose hero.
 const PALETTE = [
-  { color: "#ec9c9d", weight: 0.45 }, // sakura
-  { color: "#f2cfca", weight: 0.3 }, // misty rose
-  { color: "#aa7f66", weight: 0.25 }, // milk tea
+  { color: "#7f5836", weight: 0.35 }, // aloewood
+  { color: "#aa7f66", weight: 0.3 }, // milk tea
+  { color: "#e0797b", weight: 0.2 }, // sakura, a shade deeper so it reads on pink
+  { color: "#ffffff", weight: 0.15 }, // white highlights
 ];
 
 function pickColor(r: number) {
@@ -185,10 +186,10 @@ function Pollen({ animate }: { animate: boolean }) {
       </bufferGeometry>
       <pointsMaterial
         map={texture}
-        color="#ec9c9d"
-        size={0.1}
+        color="#ffffff"
+        size={0.11}
         transparent
-        opacity={0.55}
+        opacity={0.85}
         depthWrite={false}
         sizeAttenuation
       />

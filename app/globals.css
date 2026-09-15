@@ -74,8 +74,8 @@ h3 {
 .hero {
   position: relative;
   overflow: hidden;
-  background: var(--chocolate);
-  color: var(--petal);
+  background: linear-gradient(180deg, var(--misty-rose) 0%, var(--misty-rose) 72%, var(--paper) 100%);
+  color: var(--chocolate);
   padding-inline: 20px;
   padding-block: clamp(64px, 11vw, 136px) clamp(56px, 9vw, 112px);
 }
@@ -110,7 +110,7 @@ h3 {
   content: "";
   position: absolute;
   inset: -14px 14px 14px -14px;
-  border: 3px solid var(--sakura);
+  border: 3px solid var(--aloewood);
   border-radius: 999px 999px 16px 16px;
 }
 
@@ -121,7 +121,7 @@ h3 {
   border-radius: 999px 999px 16px 16px;
   overflow: hidden;
   background: var(--aloewood);
-  box-shadow: 0 30px 60px -24px rgba(20, 10, 6, 0.6);
+  box-shadow: 0 30px 60px -28px rgba(68, 48, 37, 0.45);
 }
 
 .portrait-arch img {
@@ -150,7 +150,7 @@ h3 {
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--sakura);
+  color: var(--aloewood);
 }
 
 .hero h1 {
@@ -158,13 +158,13 @@ h3 {
   font-weight: 800;
   line-height: 0.95;
   letter-spacing: -0.025em;
-  color: var(--petal);
+  color: var(--chocolate);
 }
 
 .hero h1 em {
   font-style: italic;
   font-weight: 700;
-  color: var(--sakura);
+  color: var(--aloewood);
 }
 
 .lede {
@@ -172,7 +172,7 @@ h3 {
   max-width: 32ch;
   font-size: clamp(1.2rem, 2vw, 1.4rem);
   line-height: 1.5;
-  color: var(--misty-rose);
+  color: var(--chocolate);
 }
 
 .contact {
@@ -182,24 +182,24 @@ h3 {
 }
 
 .contact a {
-  color: var(--petal);
+  color: var(--chocolate);
   text-decoration: none;
   font-size: 1rem;
   font-weight: 700;
   padding: 9px 20px;
-  border: 2px solid var(--sakura);
+  border: 2px solid var(--chocolate);
   border-radius: 999px;
 }
 
 .contact a:first-child {
-  background: var(--sakura);
-  color: var(--chocolate);
+  background: var(--chocolate);
+  color: var(--petal);
 }
 
 .contact a:hover {
-  background: var(--misty-rose);
-  border-color: var(--misty-rose);
-  color: var(--chocolate);
+  background: var(--aloewood);
+  border-color: var(--aloewood);
+  color: var(--petal);
 }
 
 /* ---------- content column ---------- */
@@ -349,10 +349,10 @@ ul {
 
 .footer {
   padding-block: 48px 72px;
-  background: var(--chocolate);
-  color: var(--petal);
+  background: var(--misty-rose);
+  color: var(--chocolate);
   /* full-bleed band without extra markup */
-  box-shadow: 0 0 0 100vmax var(--chocolate);
+  box-shadow: 0 0 0 100vmax var(--misty-rose);
   clip-path: inset(0 -100vmax);
   font-size: 1.1rem;
 }
@@ -362,11 +362,12 @@ ul {
 }
 
 .footer a {
-  color: var(--petal);
+  color: var(--chocolate);
+  text-decoration-color: var(--aloewood);
 }
 
 .footer .muted {
-  color: var(--misty-rose);
+  color: var(--aloewood);
   font-size: 0.95rem;
 }
 
