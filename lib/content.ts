@@ -92,19 +92,9 @@ export const publications: Publication[] = [
 // Independent interpretability work. These are ongoing: describe the question and method, not results.
 export const inProgress = [
   {
-    title: "Does a model admit when a hint changed its answer?",
-    text: "When a model flips toward a planted wrong hint, does its chain of thought say so? I'm testing whether \"following the hint\" and \"acknowledging the hint\" are separable directions in the residual stream, using diff-of-means directions and cross-ablation on Qwen2.5-1.5B. A calibration check asks whether injecting the acknowledgment direction produces honest confessions or just more talk about hints.",
-    tags: ["CoT faithfulness", "TransformerLens", "causal ablation"],
-  },
-  {
     title: "Narrative identity vs. trait prompting in reward hacking",
     text: "Does telling a model it's Hades from Disney's Hercules change how it cheats on ImpossibleBench differently from telling it \"you are evil\"? I build persona-vector-style directions for characters and traits, probe each layer for the exploit decision, compare steering at matched norms, and use a Jacobian lens to check whether the decision is legible before the model writes anything.",
     tags: ["reward hacking", "persona vectors", "probes", "J-lens"],
-  },
-  {
-    title: "Narrative pressure and hollow compliance",
-    text: "A factorial harness that crosses narrative pressure (deadlines, failure after failure) with whether there's someone to report to, on a coding task that can't be honestly solved. It's paired with a necessity and sufficiency test on the extracted \"narrative mode\" direction.",
-    tags: ["behavioral evals", "steering", "factorial design"],
   },
 ];
 

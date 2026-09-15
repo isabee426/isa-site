@@ -153,7 +153,7 @@ export default function Home() {
 
         <section aria-labelledby="in-progress">
           <h2 id="in-progress">work in progress</h2>
-          <p className="section-note">Independent interpretability projects on AI safety and model behavior. These are ongoing, so I describe the questions and methods here, not results.</p>
+          <p className="section-note">An independent interpretability project on AI safety and model behavior. It's ongoing, so I describe the question and method here, not results.</p>
           <ul className="notes">
             {inProgress.map((n) => (
               <li key={n.title}>
