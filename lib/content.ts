@@ -22,7 +22,7 @@ export const profile = {
 };
 
 export const about = [
-  "I study how to make imperfect signals from inside a model safe to use. My current work puts visual-attention probes into GRPO rewards for vision-language models, with constraints that let the probe break ties but never override correctness.",
+  "I study how to make imperfect signals from inside a model safe to use in RL. My current work puts visual-attention probes into GRPO rewards for vision-language models, with constraints that let the probe break ties but never override correctness.",
   "I did my B.S. in Computer Science at UC Santa Cruz (2022–2026), where I pitched and first-authored a research project in Dr. Yuyin Zhou's lab. Before that I worked on explainable ARC-AGI reasoning at TrainLoop (YC W25) and on on-device LLM tooling at Intel. Lately I've been spending my own time on interpretability for safety: faithfulness, reward hacking, and how framing changes what models do.",
 ];
 
