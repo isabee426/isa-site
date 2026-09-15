@@ -34,11 +34,11 @@ function mulberry32(seed: number) {
   };
 }
 
-// Tuned to glow against the chocolate hero.
+// Tuned to glow against the dark chocolate hero.
 const PALETTE = [
-  { color: "#d4a23f", weight: 0.55 }, // gold, same family as the stole
-  { color: "#f0c7c4", weight: 0.3 }, // blush
-  { color: "#b07a60", weight: 0.15 }, // milk chocolate
+  { color: "#ec9c9d", weight: 0.45 }, // sakura
+  { color: "#f2cfca", weight: 0.3 }, // misty rose
+  { color: "#aa7f66", weight: 0.25 }, // milk tea
 ];
 
 function pickColor(r: number) {
@@ -185,8 +185,8 @@ function Pollen({ animate }: { animate: boolean }) {
       </bufferGeometry>
       <pointsMaterial
         map={texture}
-        color="#c9973a"
-        size={0.09}
+        color="#ec9c9d"
+        size={0.1}
         transparent
         opacity={0.55}
         depthWrite={false}

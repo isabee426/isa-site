@@ -1,15 +1,14 @@
 :root {
-  --paper: #fffaf7;
-  --cream: #fff4ee;
-  --blush: #fbe9e8;
-  --blush-deep: #f1d3d2;
-  --blush-on-dark: #f3d6d0;
-  --cocoa: #2e1a12;
-  --cocoa-soft: #5c3a2c;
-  --cocoa-mute: #8f6e60;
-  --gold: #d4a23f;
-  --gold-ink: #8c6216; /* darker gold, readable as text on paper */
-  --rule: #e8cfcb;
+  /* palette: dark chocolate, aloewood, milk tea, sakura, misty rose */
+  --chocolate: #443025;
+  --aloewood: #7f5836;
+  --milk-tea: #aa7f66;
+  --sakura: #ec9c9d;
+  --misty-rose: #f2cfca;
+
+  --paper: #fcf5f3;
+  --petal: #fff6f3; /* lightest text on chocolate */
+  --rule: #ecd6d1;
   /* --font-display comes from next/font in app/layout.tsx */
 }
 
@@ -19,7 +18,7 @@
 
 html {
   background: var(--paper);
-  color: var(--cocoa);
+  color: var(--chocolate);
   -webkit-font-smoothing: antialiased;
 }
 
@@ -34,26 +33,26 @@ body {
 }
 
 ::selection {
-  background: var(--gold);
-  color: var(--cocoa);
+  background: var(--sakura);
+  color: var(--chocolate);
 }
 
 a {
-  color: var(--cocoa);
+  color: var(--chocolate);
   font-weight: 600;
   text-decoration-line: underline;
-  text-decoration-color: var(--gold);
-  text-decoration-thickness: 2.5px;
+  text-decoration-color: var(--sakura);
+  text-decoration-thickness: 3px;
   text-underline-offset: 4px;
-  transition: color 0.2s, background-color 0.2s, text-decoration-color 0.2s;
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s;
 }
 
 a:hover {
-  color: var(--gold-ink);
+  color: var(--aloewood);
 }
 
 a:focus-visible {
-  outline: 3px solid var(--gold);
+  outline: 3px solid var(--sakura);
   outline-offset: 3px;
   border-radius: 4px;
 }
@@ -67,7 +66,7 @@ h3 {
 }
 
 .muted {
-  color: var(--cocoa-mute);
+  color: var(--milk-tea);
 }
 
 /* ---------- hero ---------- */
@@ -75,8 +74,8 @@ h3 {
 .hero {
   position: relative;
   overflow: hidden;
-  background: var(--cocoa);
-  color: var(--cream);
+  background: var(--chocolate);
+  color: var(--petal);
   padding-inline: 20px;
   padding-block: clamp(64px, 11vw, 136px) clamp(56px, 9vw, 112px);
 }
@@ -111,7 +110,7 @@ h3 {
   content: "";
   position: absolute;
   inset: -14px 14px 14px -14px;
-  border: 3px solid var(--gold);
+  border: 3px solid var(--sakura);
   border-radius: 999px 999px 16px 16px;
 }
 
@@ -121,8 +120,8 @@ h3 {
   max-width: 100%;
   border-radius: 999px 999px 16px 16px;
   overflow: hidden;
-  background: var(--cocoa-soft);
-  box-shadow: 0 30px 60px -24px rgba(0, 0, 0, 0.6);
+  background: var(--aloewood);
+  box-shadow: 0 30px 60px -24px rgba(20, 10, 6, 0.6);
 }
 
 .portrait-arch img {
@@ -142,7 +141,7 @@ h3 {
   font-size: 3rem;
   font-weight: 800;
   font-style: italic;
-  color: var(--blush-on-dark);
+  color: var(--misty-rose);
 }
 
 .eyebrow {
@@ -151,7 +150,7 @@ h3 {
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--sakura);
 }
 
 .hero h1 {
@@ -159,13 +158,13 @@ h3 {
   font-weight: 800;
   line-height: 0.95;
   letter-spacing: -0.025em;
-  color: var(--cream);
+  color: var(--petal);
 }
 
 .hero h1 em {
   font-style: italic;
   font-weight: 700;
-  color: var(--gold);
+  color: var(--sakura);
 }
 
 .lede {
@@ -173,7 +172,7 @@ h3 {
   max-width: 32ch;
   font-size: clamp(1.2rem, 2vw, 1.4rem);
   line-height: 1.5;
-  color: var(--blush-on-dark);
+  color: var(--misty-rose);
 }
 
 .contact {
@@ -183,24 +182,24 @@ h3 {
 }
 
 .contact a {
-  color: var(--cream);
+  color: var(--petal);
   text-decoration: none;
   font-size: 1rem;
   font-weight: 700;
   padding: 9px 20px;
-  border: 2px solid var(--gold);
+  border: 2px solid var(--sakura);
   border-radius: 999px;
 }
 
 .contact a:first-child {
-  background: var(--gold);
-  color: var(--cocoa);
+  background: var(--sakura);
+  color: var(--chocolate);
 }
 
 .contact a:hover {
-  background: var(--cream);
-  border-color: var(--cream);
-  color: var(--cocoa);
+  background: var(--misty-rose);
+  border-color: var(--misty-rose);
+  color: var(--chocolate);
 }
 
 /* ---------- content column ---------- */
@@ -229,7 +228,7 @@ section h2 {
   font-weight: 800;
   line-height: 1;
   letter-spacing: -0.02em;
-  color: var(--cocoa);
+  color: var(--chocolate);
   margin-bottom: 24px;
 }
 
@@ -240,7 +239,7 @@ section h2::before {
   height: 6px;
   margin-bottom: 18px;
   border-radius: 3px;
-  background: var(--gold);
+  background: var(--sakura);
 }
 
 section p {
@@ -257,7 +256,7 @@ h3 {
 .date {
   font-size: 0.9rem;
   font-weight: 700;
-  color: var(--gold-ink);
+  color: var(--aloewood);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
@@ -266,7 +265,7 @@ h3 {
   font-size: 0.98rem;
   font-weight: 600;
   font-style: italic;
-  color: var(--gold-ink);
+  color: var(--aloewood);
   margin: 4px 0 12px !important;
 }
 
@@ -293,11 +292,11 @@ ul {
 .authors {
   margin: 8px 0 0 !important;
   font-size: 1rem;
-  color: var(--cocoa-soft);
+  color: var(--aloewood);
 }
 
 .authors strong {
-  color: var(--cocoa);
+  color: var(--chocolate);
   font-weight: 800;
 }
 
@@ -313,8 +312,8 @@ ul {
   font-weight: 700;
   padding: 5px 13px;
   border-radius: 999px;
-  background: var(--cocoa);
-  color: var(--cream);
+  background: var(--misty-rose);
+  color: var(--chocolate);
 }
 
 .pub-links {
@@ -345,15 +344,15 @@ ul {
   width: 9px;
   height: 9px;
   border-radius: 50%;
-  background: var(--gold);
+  background: var(--sakura);
 }
 
 .footer {
   padding-block: 48px 72px;
-  background: var(--cocoa);
-  color: var(--cream);
+  background: var(--chocolate);
+  color: var(--petal);
   /* full-bleed band without extra markup */
-  box-shadow: 0 0 0 100vmax var(--cocoa);
+  box-shadow: 0 0 0 100vmax var(--chocolate);
   clip-path: inset(0 -100vmax);
   font-size: 1.1rem;
 }
@@ -363,11 +362,11 @@ ul {
 }
 
 .footer a {
-  color: var(--cream);
+  color: var(--petal);
 }
 
 .footer .muted {
-  color: var(--blush-on-dark);
+  color: var(--misty-rose);
   font-size: 0.95rem;
 }
 
