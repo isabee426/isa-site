@@ -20,6 +20,6 @@ npm run dev   # http://localhost:3000
 
 ## Deploy on Vercel
 
-1. Push this repo to GitHub.
-2. In Vercel: **Add New → Project**, import the repo, and set **Root Directory** to `isa-site`.
+1. Push this repo to GitHub (it's its own repo: `isabee426/isa-site`).
+2. In Vercel: **Add New → Project** and import the repo. Leave **Root Directory** as the repo root.
 3. The framework is detected as Next.js, so no other settings are needed. Click Deploy.

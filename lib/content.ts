@@ -9,7 +9,8 @@ export const links = {
   trainloopPaper: "/arc-agi-execution-bottleneck.pdf",
   intelArticle:
     "https://medium.com/@oarevalo/improve-battery-life-and-performance-using-the-intel-battery-life-diagnostics-tool-86689f0f6a9f",
-  ftGrpoPreprint: "/breaking-the-loop.pdf",
+  // Empty until the de-anonymized preprint replaces the review copy in public/breaking-the-loop.pdf.
+  ftGrpoPreprint: "",
 };
 
 export const profile = {
@@ -42,6 +43,7 @@ export const interests = [
 ];
 
 export const news = [
+  { date: "Oct 2026", text: "Committed my first-author FT-GRPO paper to EACL 2027 after ACL Rolling Review." },
   { date: "Aug 2026", text: "Submitted my first-author paper on attention probes in GRPO rewards to ACL Rolling Review." },
   { date: "Jun 2026", text: "Finished my B.S. in Computer Science at UC Santa Cruz." },
   { date: "Mar 2026", text: "Spoke on Baskin Engineering's undergraduate research panel at UCSC." },
@@ -68,11 +70,11 @@ export const publications: Publication[] = [
       { name: "Hardy Chen", href: "https://g-h-chen.github.io/" },
       { name: "Yuyin Zhou", href: "https://yuyinzhou.github.io/" },
     ],
-    venue: "Under review at ACL Rolling Review, 2026",
+    venue: "Committed to EACL 2027 · ACL Rolling Review, Aug 2026",
     summary:
       "Reasoning VLMs trained with GRPO can fall into repetition collapse when their attention drifts off the image. A frozen probe on visual attention (0.796 AUROC) is used only to break reward ties, never to override task correctness. It also recovers a learning signal from fully tied groups, where vanilla GRPO gives no gradient at all.",
     highlights: ["+3.4 in-domain accuracy", "+6.3 on MathVision", "~⅓ less repetition", "Qwen3-VL-8B, full fine-tune"],
-    links: [{ label: "pdf", href: links.ftGrpoPreprint }],
+    links: links.ftGrpoPreprint ? [{ label: "pdf", href: links.ftGrpoPreprint }] : [],
     figure: "tiebreak",
   },
   {
