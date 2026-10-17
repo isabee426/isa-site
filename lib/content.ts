@@ -9,8 +9,7 @@ export const links = {
   trainloopPaper: "/arc-agi-execution-bottleneck.pdf",
   intelArticle:
     "https://medium.com/@oarevalo/improve-battery-life-and-performance-using-the-intel-battery-life-diagnostics-tool-86689f0f6a9f",
-  // Empty until the de-anonymized preprint replaces the review copy in public/breaking-the-loop.pdf.
-  ftGrpoPreprint: "",
+  ftGrpoPreprint: "/breaking-the-loop-deanon.pdf",
 };
 
 export const profile = {
@@ -68,6 +67,7 @@ export const publications: Publication[] = [
     authors: [
       { name: "Isabella Beltran Shapland", me: true },
       { name: "Hardy Chen", href: "https://g-h-chen.github.io/" },
+      { name: "Cihang Xie", href: "https://cihangxie.github.io/" },
       { name: "Yuyin Zhou", href: "https://yuyinzhou.github.io/" },
     ],
     venue: "Committed to EACL 2027 · ACL Rolling Review, Aug 2026",
