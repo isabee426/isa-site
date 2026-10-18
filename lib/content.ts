@@ -143,7 +143,7 @@ export const experience: Role[] = [
     logo: "/logos/intel.svg",
     points: [
       "Built a Haystack RAG pipeline (LLaMA-3.2) that pulls CPU anomalies from large JSON system logs, plus a deterministic Python validator to catch hallucinations.",
-      "Wrote Intel's first internal benchmarks for local model hosting on integrated GPUs (Ollama, SYCL).",
+      "Wrote Intel's first internal documentation for hosting open-source models on integrated GPUs with SYCL.",
     ],
     link: { label: "BLDT v3.0 write-up", href: links.intelArticle },
   },
