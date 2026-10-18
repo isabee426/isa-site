@@ -46,6 +46,7 @@ export const news = [
   { date: "Aug 2026", text: "Submitted my first-author paper on attention probes in GRPO rewards to ACL Rolling Review." },
   { date: "Jun 2026", text: "Finished my B.S. in Computer Science at UC Santa Cruz." },
   { date: "Mar 2026", text: "Spoke on Baskin Engineering's undergraduate research panel at UCSC." },
+  { date: "2025", text: "Published a TrainLoop research report on explainable ARC-AGI v2 reasoning, showing GPT-5-nano's bottleneck is execution, not reasoning." },
   { date: "2025", text: "BrowseIQ won AgentHacks 2025." },
 ];
 
