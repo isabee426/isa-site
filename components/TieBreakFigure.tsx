@@ -7,10 +7,13 @@ import { useMemo, useState } from "react";
 
   Rewards follow the paper: r = s + ηm with a binary verifier s and η = 0.1, so every
   well-formatted response scores 1.1 (correct) or 0.1 (wrong).
-    Vanilla (Eq. 1):      A⁰ = (r − mean) / (std + ε)
-    Partial tie (Eq. 4):  A = A⁰ + αΔ(ρ/(K−1) − ½), α = 0.5, ρ = ascending probe rank in the tie
-    Full tie (Eq. 5):     A = β(f − mean f) / max(std f, τ), τ = 0.01
-  Probe scores below are illustrative, modeled on the paper's case studies.
+    Vanilla (Eq. 3):      A⁰ = (r − mean) / (std + ε)
+    Partial tie (Eq. 8):  A = A⁰ + αΔ(ρ/(K−1) − ½), α = 0.5, ρ = ascending probe rank in the tie
+    Full tie (Eq. 9):     A = β(f − mean f) / max(std f, τ), τ = 0.01
+
+  Both groups are real: 8 rollouts each from Qwen3-VL-8B-Thinking before RL (the probe-collection
+  set), on prompts from the probe's held-out split, scored by the frozen paper probe. Correctness is
+  the content label. Picked by grpo-families/scripts/_widget_real_group.py (math idx 782, mcq idx 852).
 */
 
 type Response = { id: string; correct: boolean; probe: number; note: string };
@@ -19,34 +22,36 @@ const ETA = 0.1;
 const ALPHA = 0.5;
 const TAU = 0.01;
 const EPS = 1e-6;
-const DOMAIN = 2; // advantage axis runs from −2 to +2
+const DOMAIN = 2.5; // advantage axis runs from −2.5 to +2.5
 const TICKS = [-2, -1, 0, 1, 2];
 
-const GROUPS: Record<"partial" | "full", { label: string; responses: Response[] }> = {
+const GROUPS: Record<"partial" | "full", { label: string; question: string; responses: Response[] }> = {
   partial: {
     label: "Some right, some wrong",
+    question: "Read a graph of y = −6·log₄(x − 1) + a that passes through (5, −3), and find the function.",
     responses: [
-      { id: "R1", correct: true, probe: 0.75, note: "Reads both graphs, then commits" },
-      { id: "R2", correct: false, probe: 0.84, note: "Clean steps, but assumes the wrong height" },
-      { id: "R3", correct: true, probe: 0.36, note: "Right answer after ~2,700 tokens of “Wait…”" },
-      { id: "R4", correct: true, probe: 0.62, note: "Checks the setup once, then answers" },
-      { id: "R5", correct: false, probe: 0.38, note: "Misreads the graph and loops" },
-      { id: "R6", correct: true, probe: 0.81, note: "Grounded and concise" },
-      { id: "R7", correct: false, probe: 0.21, note: "Repeats itself, then guesses" },
-      { id: "R8", correct: true, probe: 0.55, note: "Long but steady derivation" },
+      { id: "R1", correct: true, probe: 0.35, note: "Right, then 1,300 words doubting the graph" },
+      { id: "R2", correct: true, probe: 0.7, note: "Plugs in (5, −3), solves, answers" },
+      { id: "R3", correct: false, probe: 0.81, note: "Short and confident, but reads (5, 3)" },
+      { id: "R4", correct: true, probe: 0.8, note: "Reads (5, −3), solves, checks once" },
+      { id: "R5", correct: true, probe: 0.28, note: "Right after ~2,000 words and 41 “wait”s" },
+      { id: "R6", correct: true, probe: 0.82, note: "Reads (5, −3), solves, verifies" },
+      { id: "R7", correct: false, probe: 0.66, note: "Reads (5, 3), then patches around it" },
+      { id: "R8", correct: true, probe: 0.45, note: "Right, after 21 “wait”s" },
     ],
   },
   full: {
     label: "All wrong",
+    question: "An inscribed-angle question on a circle diagram, multiple choice. No answer gets it right.",
     responses: [
-      { id: "R1", correct: false, probe: 0.83, note: "Steady steps, misreads one label" },
-      { id: "R2", correct: false, probe: 0.31, note: "Loops on the same check" },
-      { id: "R3", correct: false, probe: 0.55, note: "Partly grounded, picks the wrong option" },
-      { id: "R4", correct: false, probe: 0.18, note: "Loops, then answers at the token limit" },
-      { id: "R5", correct: false, probe: 0.64, note: "Reads the chart, slips on arithmetic" },
-      { id: "R6", correct: false, probe: 0.47, note: "Hedges between two options" },
-      { id: "R7", correct: false, probe: 0.29, note: "Repeats “let me check again”" },
-      { id: "R8", correct: false, probe: 0.72, note: "Describes the image, answers wrong" },
+      { id: "R1", correct: false, probe: 0.65, note: "Applies the theorem, then guesses" },
+      { id: "R2", correct: false, probe: 0.53, note: "60 “wait”s, then the same guess" },
+      { id: "R3", correct: false, probe: 0.63, note: "Gets m/2, then assumes m = 120°" },
+      { id: "R4", correct: false, probe: 0.48, note: "~2,500 words, 75 “wait”s, switches answer" },
+      { id: "R5", correct: false, probe: 0.51, note: "Long detour, same guess" },
+      { id: "R6", correct: false, probe: 0.64, note: "Gets m/2, then assumes m = 120°" },
+      { id: "R7", correct: false, probe: 0.52, note: "Collapses into garbled text, then answers" },
+      { id: "R8", correct: false, probe: 0.73, note: "Shortest: reads the diagram, answers" },
     ],
   },
 };
@@ -89,22 +94,23 @@ function ftAdvantages(rs: Response[], a0: number[], beta: number) {
   return out;
 }
 
-// β is the batch mean of |A⁰| over non-tied groups; the partially tied group stands in for the batch.
-const BETA = mean(vanillaAdvantages(GROUPS.partial.responses).map(Math.abs));
+// β is the batch mean of |A⁰| over non-tied groups: here, over the 19 non-tied held-out groups
+// in the same collection (from _widget_real_group.py).
+const BETA = 0.763;
 
-const fmt = (x: number) => `${x >= 0 ? "+" : "−"}${Math.abs(x).toFixed(2)}`;
+const fmt = (x: number) => (Math.abs(x) < 0.005 ? "0.00" : `${x >= 0 ? "+" : "−"}${Math.abs(x).toFixed(2)}`);
 const pct = (x: number) => ((x + DOMAIN) / (2 * DOMAIN)) * 100;
 
 const CAPTIONS = {
   partial: {
     vanilla:
-      "Plain GRPO only knows right or wrong. All five right answers get the same push, so the one that looped for 2,700 tokens is rewarded exactly as much as the clean ones.",
-    ft: "FT-GRPO breaks those ties using attention on the image. Answers that kept looking at the image move up and loopy ones move down, but every right answer still stays above every wrong one.",
+      "Plain GRPO only knows right or wrong. All six right answers get the same push, so the one that took ~2,000 words and 41 “wait”s is rewarded exactly as much as the 214-word one.",
+    ft: "FT-GRPO breaks those ties using attention on the image. Right answers that kept looking at the image move up and the loopy ones move down, but every right answer stays above every wrong one, even the wrong answer the probe scored 0.81.",
   },
   full: {
     vanilla:
-      "Every answer is wrong, so they all score the same and the model learns nothing from this question. In training, 34.4% of questions looked like this.",
-    ft: "FT-GRPO still finds a signal: among the wrong answers, the ones that kept looking at the image get a small push up, and the loopy ones get pushed down.",
+      "Every answer is wrong, so they all score the same and the model learns nothing from this question. Before training, 34.4% of question groups were fully tied like this (all right or all wrong).",
+    ft: "FT-GRPO still finds a signal: the short answer the probe scored highest gets pushed up, and the 2,500-word answer with 75 “wait”s gets pushed down hardest.",
   },
 };
 
@@ -156,6 +162,8 @@ export default function TieBreakFigure() {
           </button>
         </div>
       </div>
+
+      <p className="tb-fine">Question: {group.question}</p>
 
       <div className="tb-legend">
         {nCorrect > 0 && <span><i className="tb-key tb-key-correct" aria-hidden="true" />✓ right</span>}
@@ -254,8 +262,9 @@ export default function TieBreakFigure() {
       <figcaption>
         <p>{CAPTIONS[groupKey][effective]}</p>
         <p className="tb-fine">
-          The "push" is GRPO's advantage. Example answers and probe scores are illustrative, modeled on the
-          paper's case studies; the pushes are computed with the paper's formulas (Eq. 1, 4, 5; α = 0.5).
+          The "push" is GRPO's advantage. These are real answers from Qwen3-VL-8B-Thinking before RL, on questions
+          the probe never trained on, with the frozen probe's real scores; the pushes use the paper's formulas
+          (Eq. 3, 8, 9; α = 0.5).
         </p>
       </figcaption>
 

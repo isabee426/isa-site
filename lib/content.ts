@@ -15,7 +15,7 @@ export const links = {
 export const profile = {
   name: "Isabella Beltran Shapland",
   short: "Isa",
-  role: "Mechanistic ML Researcher",
+  role: "Machine Learning Researcher",
   affiliation: "UC Santa Cruz",
   focus: ["RL alignment", "visual reasoning", "model reliability"],
   seeking: "Open to research roles in AI safety and model behavior",
@@ -73,7 +73,7 @@ export const publications: Publication[] = [
     ],
     venue: "Committed to EACL 2027 · ACL Rolling Review, Aug 2026",
     summary:
-      "Reasoning VLMs trained with GRPO can fall into repetition collapse when their attention drifts off the image. A frozen probe on visual attention (0.796 AUROC) is used only to break reward ties, never to override task correctness. It also recovers a learning signal from fully tied groups, where vanilla GRPO gives no gradient at all.",
+      "Reasoning VLMs trained with GRPO can fall into repetition collapse when their attention drifts off the image. A frozen probe on visual attention (0.796 AUROC) is used only to break reward ties, never to override task correctness; we call this FT-GRPO. It also recovers a learning signal from fully tied groups, where vanilla GRPO gives no gradient at all.",
     highlights: ["+3.4 in-domain accuracy", "+6.3 on MathVision", "~⅓ less repetition", "Qwen3-VL-8B, full fine-tune"],
     links: links.ftGrpoPreprint ? [{ label: "pdf", href: links.ftGrpoPreprint }] : [],
     figure: "tiebreak",
@@ -119,8 +119,8 @@ export const experience: Role[] = [
     dates: "Jan 2026 – Present",
     logo: "/logos/ucsc.png",
     points: [
-      "Pitched the project in office hours, then built all of it: the Verl training setup, RL configs, data ingestion, controls, and multi-arm ablations on 8×A100 and 2×H200.",
-      "Designed the tie-only injection method and showed why simply adding the probe to the reward degrades response quality.",
+      "Pitched the project in office hours, then built all of it: the Verl training setup, RL configs, data ingestion, controls, and multi-arm ablations on 8×A100 and 2×H200 (the paper's 8B runs are all on 2×H200).",
+      "Designed the tie-only injection method and showed that simply adding the probe to the reward lets confident wrong answers outrank right ones (the tie-break was right on 16 of 21 in-domain disagreements).",
     ],
   },
   {

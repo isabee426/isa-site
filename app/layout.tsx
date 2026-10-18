@@ -13,10 +13,10 @@ const fraunces = Fraunces({
 export const metadata: Metadata = {
   title: "Isabella Beltran Shapland",
   description:
-    "Mechanistic ML researcher working on RL alignment, AI safety, model behavior, and visual reasoning.",
+    "Machine learning researcher working on RL alignment, AI safety, model behavior, and visual reasoning.",
   openGraph: {
     title: "Isabella Beltran Shapland",
-    description: "Mechanistic ML researcher: RL alignment, AI safety, model behavior, visual reasoning.",
+    description: "Machine learning researcher: RL alignment, AI safety, model behavior, visual reasoning.",
   },
 };
 

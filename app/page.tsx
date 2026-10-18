@@ -262,7 +262,7 @@ export default function Home() {
         <p>
           Say hello at <a href={`mailto:${links.email}`}>{links.email}</a>.
         </p>
-        <p className="muted">Built with Next.js and three.js · updated September 2026</p>
+        <p className="muted">Built with Next.js and three.js · updated October 2026</p>
       </footer>
     </>
   );
