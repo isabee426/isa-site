@@ -12,7 +12,7 @@ type Props = {
 
 export default function LookLede({ before, phrase }: Props) {
   const [active, setActive] = useState(false);
-  const trigger = useRef<HTMLSpanElement>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
 
   const set = (value: boolean) => {
     setActive(value);
@@ -32,16 +32,19 @@ export default function LookLede({ before, phrase }: Props) {
   return (
     <p className="lede">
       {before}
-      <span
+      {/* A real button, so taps register on iOS (Safari ignores taps on plain, non-clickable spans). */}
+      <button
+        type="button"
         ref={trigger}
         className="look-trigger"
         data-active={active}
+        aria-pressed={active}
         onPointerEnter={(e) => e.pointerType === "mouse" && set(true)}
         onPointerLeave={(e) => e.pointerType === "mouse" && set(false)}
         onClick={() => set(!active)}
       >
         {phrase}
-      </span>
+      </button>
       .
     </p>
   );

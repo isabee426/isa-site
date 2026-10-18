@@ -254,8 +254,16 @@ h3 {
 }
 
 .look-trigger {
+  display: inline;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: inherit;
+  -webkit-tap-highlight-color: transparent;
   color: var(--text);
-  cursor: default;
+  cursor: pointer;
   text-decoration-line: underline;
   text-decoration-style: dotted;
   text-decoration-color: var(--underline);
@@ -952,6 +960,12 @@ ul {
   /* text stacks over the threads here, so quiet them down */
   .threads {
     opacity: 0.5;
+    transition: opacity 0.6s ease;
+  }
+
+  /* while "keep looking at the image" is tapped, bring the threads back to full strength */
+  .hero:has(.look-trigger[data-active="true"]) .threads {
+    opacity: 1;
   }
 
   .hero-inner {
