@@ -456,6 +456,56 @@ ul {
   font-size: 0.9rem;
 }
 
+.tb-intro {
+  margin: 0 0 12px;
+  color: var(--text-soft);
+  line-height: 1.45;
+}
+
+.tb-intro strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.tb-meter {
+  display: inline-block;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--rule);
+  overflow: hidden;
+  vertical-align: middle;
+}
+
+.tb-meter > i {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--text-mute);
+}
+
+.tb-axis > .tb-axis-l {
+  left: 0;
+  transform: none;
+}
+
+.tb-axis > .tb-axis-r {
+  right: 0;
+  left: auto;
+  transform: none;
+}
+
+.tb-zero-dot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  border-radius: 50%;
+  background: var(--tb-wrong);
+}
+
 .tb-controls {
   display: flex;
   flex-wrap: wrap;
@@ -530,13 +580,14 @@ ul {
 .tb-head,
 .tb-row {
   display: grid;
-  grid-template-columns: 18px minmax(0, 1.25fr) 40px minmax(0, 1fr);
+  grid-template-columns: 18px minmax(0, 1.25fr) 56px minmax(0, 1fr);
   align-items: center;
   column-gap: 8px;
 }
 
 .tb-head {
-  height: 22px;
+  height: 30px;
+  line-height: 1.1;
   font-size: 0.75rem;
   color: var(--text-mute);
 }
@@ -570,7 +621,7 @@ ul {
 /* gridlines live in the bar column, which starts after the label and probe columns */
 .tb-grid {
   position: absolute;
-  inset: 0 0 0 calc((100% - 18px - 40px - 24px) * 1.25 / 2.25 + 18px + 40px + 24px);
+  inset: 0 0 0 calc((100% - 18px - 56px - 24px) * 1.25 / 2.25 + 18px + 56px + 24px);
   pointer-events: none;
 }
 
@@ -748,12 +799,12 @@ ul {
 
   .tb-head,
   .tb-row {
-    grid-template-columns: 14px minmax(0, 1fr) 34px minmax(0, 1fr);
+    grid-template-columns: 14px minmax(0, 1fr) 44px minmax(0, 1fr);
     column-gap: 6px;
   }
 
   .tb-grid {
-    inset: 0 0 0 calc((100% - 14px - 34px - 18px) / 2 + 14px + 34px + 18px);
+    inset: 0 0 0 calc((100% - 14px - 44px - 18px) / 2 + 14px + 44px + 18px);
   }
 
   .tb-note {
@@ -767,6 +818,11 @@ ul {
 
   .tb-hint {
     margin-left: 0;
+  }
+
+  .tb-head {
+    height: 36px;
+    font-size: 0.68rem;
   }
 }
 

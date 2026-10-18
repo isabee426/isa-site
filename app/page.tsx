@@ -151,24 +151,6 @@ export default function Home() {
           </ol>
         </section>
 
-        <section aria-labelledby="in-progress">
-          <h2 id="in-progress">work in progress</h2>
-          <p className="section-note">An independent interpretability project on AI safety and model behavior. It's ongoing, so I describe the question and method here, not results.</p>
-          <ul className="notes">
-            {inProgress.map((n) => (
-              <li key={n.title}>
-                <h3>{n.title}</h3>
-                <p>{n.text}</p>
-                <ul className="chips">
-                  {n.tags.map((t) => (
-                    <li key={t}>{t}</li>
-                  ))}
-                </ul>
-              </li>
-            ))}
-          </ul>
-        </section>
-
         <section aria-labelledby="experience">
           <h2 id="experience">experience</h2>
           <ol className="roles">
@@ -252,6 +234,24 @@ export default function Home() {
               <li key={m.text}>
                 {m.text}{" "}
                 {m.link && <Ext href={m.link.href}>[{m.link.label}]</Ext>}
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section aria-labelledby="in-progress">
+          <h2 id="in-progress">work in progress</h2>
+          <p className="section-note">An independent interpretability project on AI safety and model behavior. It's ongoing, so I describe the question and method here, not results.</p>
+          <ul className="notes">
+            {inProgress.map((n) => (
+              <li key={n.title}>
+                <h3>{n.title}</h3>
+                <p>{n.text}</p>
+                <ul className="chips">
+                  {n.tags.map((t) => (
+                    <li key={t}>{t}</li>
+                  ))}
+                </ul>
               </li>
             ))}
           </ul>

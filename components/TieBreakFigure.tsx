@@ -24,7 +24,7 @@ const TICKS = [-2, -1, 0, 1, 2];
 
 const GROUPS: Record<"partial" | "full", { label: string; responses: Response[] }> = {
   partial: {
-    label: "Partially tied group",
+    label: "Some right, some wrong",
     responses: [
       { id: "R1", correct: true, probe: 0.75, note: "Reads both graphs, then commits" },
       { id: "R2", correct: false, probe: 0.84, note: "Clean steps, but assumes the wrong height" },
@@ -37,7 +37,7 @@ const GROUPS: Record<"partial" | "full", { label: string; responses: Response[] 
     ],
   },
   full: {
-    label: "Fully tied group",
+    label: "All wrong",
     responses: [
       { id: "R1", correct: false, probe: 0.83, note: "Steady steps, misreads one label" },
       { id: "R2", correct: false, probe: 0.31, note: "Loops on the same check" },
@@ -98,23 +98,22 @@ const pct = (x: number) => ((x + DOMAIN) / (2 * DOMAIN)) * 100;
 const CAPTIONS = {
   partial: {
     vanilla:
-      "Vanilla GRPO: the five correct answers share one advantage and the three wrong ones share another, so a looping answer is reinforced exactly as much as a grounded one.",
-    ft: "FT-GRPO ranks each tie by probe score. The looping correct answer drops to the bottom of the correct group and the grounded wrong answer rises to the top of the wrong group, but every correct answer still outranks every wrong one.",
+      "Plain GRPO only knows right or wrong. All five right answers get the same push, so the one that looped for 2,700 tokens is rewarded exactly as much as the clean ones.",
+    ft: "FT-GRPO breaks those ties using attention on the image. Answers that kept looking at the image move up and loopy ones move down, but every right answer still stays above every wrong one.",
   },
   full: {
     vanilla:
-      "Every response is wrong, so every advantage is zero and this prompt contributes no gradient. In training, 34.4% of groups looked like this.",
-    ft: "FT-GRPO recovers a zero-sum signal from the probe alone, scaled to the batch's usual advantage size, so the policy still learns to prefer grounded attempts.",
+      "Every answer is wrong, so they all score the same and the model learns nothing from this question. In training, 34.4% of questions looked like this.",
+    ft: "FT-GRPO still finds a signal: among the wrong answers, the ones that kept looking at the image get a small push up, and the loopy ones get pushed down.",
   },
 };
 
 export default function TieBreakFigure() {
   const [groupKey, setGroupKey] = useState<"partial" | "full">("partial");
   const [method, setMethod] = useState<"vanilla" | "ft">("vanilla");
-  const [preview, setPreview] = useState(false);
   const [hovered, setHovered] = useState<string | null>(null);
 
-  const effective = preview && method === "vanilla" ? "ft" : method;
+  const effective = method;
   const group = GROUPS[groupKey];
 
   const rows = useMemo(() => {
@@ -135,6 +134,11 @@ export default function TieBreakFigure() {
 
   return (
     <figure className="tb" aria-label="Interactive figure: how FT-GRPO breaks reward ties">
+      <p className="tb-intro">
+        A model answers the same question 8 times. Training then pushes each answer
+        <strong> right (do more of this)</strong> or <strong>left (do less)</strong>. Bar length is how hard.
+      </p>
+
       <div className="tb-controls">
         <div className="tb-seg" role="group" aria-label="Group type">
           {(["partial", "full"] as const).map((k) => (
@@ -144,47 +148,44 @@ export default function TieBreakFigure() {
           ))}
         </div>
         <div className="tb-seg" role="group" aria-label="Advantage estimator">
-          <button type="button" aria-pressed={effective === "vanilla"} onClick={() => { setMethod("vanilla"); setPreview(false); }}>
-            Vanilla GRPO
+          <button type="button" aria-pressed={effective === "vanilla"} onClick={() => setMethod("vanilla")}>
+            Before (GRPO)
           </button>
           <button type="button" aria-pressed={effective === "ft"} onClick={() => setMethod("ft")}>
-            FT-GRPO
+            After (FT-GRPO)
           </button>
         </div>
       </div>
 
       <div className="tb-legend">
-        {nCorrect > 0 && <span><i className="tb-key tb-key-correct" aria-hidden="true" />✓ correct</span>}
+        {nCorrect > 0 && <span><i className="tb-key tb-key-correct" aria-hidden="true" />✓ right</span>}
         {nCorrect < rows.length && <span><i className="tb-key tb-key-wrong" aria-hidden="true" />✗ wrong</span>}
         {showBoundary && (
-          <span><i className="tb-key tb-key-line" aria-hidden="true" />reward boundary, never crossed</span>
+          <span><i className="tb-key tb-key-line" aria-hidden="true" />right answers always stay above wrong ones</span>
         )}
-        <span className="tb-hint">{method === "vanilla" ? "Hover the chart or tap FT-GRPO" : "Advantage per response"}</span>
+        <span className="tb-hint">
+          {method === "ft"
+            ? "Hover a row for the numbers"
+            : groupKey === "full"
+              ? "Every push is 0. Click After"
+              : "Click After to see what changes"}
+        </span>
       </div>
 
       <div className="tb-head" aria-hidden="true">
-        <span>Response</span>
-        <span className="tb-probe">Probe</span>
+        <span>Answer</span>
+        <span className="tb-probe" title="Probe score: how much the answer kept attending to the image (0 to 1)">
+          Looks at image
+        </span>
         <span className="tb-axis">
-          {TICKS.map((t) => (
-            <span
-              key={t}
-              className={t === -DOMAIN ? "tb-tick-start" : t === DOMAIN ? "tb-tick-end" : undefined}
-              style={{ left: `${pct(t)}%` }}
-            >
-              {t === 0 ? "0" : fmt(t).replace(".00", "")}
-            </span>
-          ))}
+          <span className="tb-axis-l">← do less</span>
+          <span className="tb-axis-r">do more →</span>
         </span>
       </div>
 
       <div
         className="tb-plot"
-        onPointerEnter={(e) => e.pointerType === "mouse" && setPreview(true)}
-        onPointerLeave={() => {
-          setPreview(false);
-          setHovered(null);
-        }}
+        onPointerLeave={() => setHovered(null)}
       >
         <div className="tb-grid" aria-hidden="true">
           {TICKS.map((t) => (
@@ -215,8 +216,11 @@ export default function TieBreakFigure() {
             >
               <span className="tb-mark" aria-hidden="true">{r.correct ? "✓" : "✗"}</span>
               <span className="tb-note">{r.note}</span>
-              <span className="tb-probe">{r.probe.toFixed(2)}</span>
+              <span className="tb-probe">
+                <span className="tb-meter" aria-hidden="true"><i style={{ width: `${r.probe * 100}%` }} /></span>
+              </span>
               <span className="tb-track">
+                {Math.abs(value) < 1e-9 && <span className="tb-zero-dot" aria-hidden="true" />}
                 <span
                   className={`tb-bar ${r.correct ? "tb-bar-correct" : "tb-bar-wrong"} ${value >= 0 ? "tb-pos" : "tb-neg"}`}
                   style={{ left: `${left}%`, width: `${width}%` }}
@@ -238,10 +242,10 @@ export default function TieBreakFigure() {
                   : `translateY(calc(var(--tb-row) * ${order.indexOf(hoveredRow.id) + 1}))`,
             }}
           >
-            <strong>{fmt(effective === "ft" ? hoveredRow.ft : hoveredRow.a0)}</strong> advantage
-            {effective === "ft" && <span> (vanilla {fmt(hoveredRow.a0)})</span>}
+            <strong>{fmt(effective === "ft" ? hoveredRow.ft : hoveredRow.a0)}</strong> push
+            {effective === "ft" && <span> (was {fmt(hoveredRow.a0)})</span>}
             <span className="tb-tip-meta">
-              {hoveredRow.correct ? "Correct" : "Wrong"} · probe {hoveredRow.probe.toFixed(2)}
+              {hoveredRow.correct ? "Right" : "Wrong"} · looks at image {hoveredRow.probe.toFixed(2)}
             </span>
           </div>
         )}
@@ -250,8 +254,8 @@ export default function TieBreakFigure() {
       <figcaption>
         <p>{CAPTIONS[groupKey][effective]}</p>
         <p className="tb-fine">
-          Illustrative group of 8 rollouts. Rewards follow the paper (correct 1.1, wrong 0.1), probe scores are
-          made up but modeled on its case studies, and advantages are computed with Eq. 1, 4, and 5 (α = 0.5).
+          The "push" is GRPO's advantage. Example answers and probe scores are illustrative, modeled on the
+          paper's case studies; the pushes are computed with the paper's formulas (Eq. 1, 4, 5; α = 0.5).
         </p>
       </figcaption>
 
@@ -261,18 +265,18 @@ export default function TieBreakFigure() {
           <table>
             <thead>
               <tr>
-                <th scope="col">Response</th>
                 <th scope="col">Answer</th>
-                <th scope="col">Probe</th>
-                <th scope="col">Vanilla A</th>
-                <th scope="col">FT-GRPO A</th>
+                <th scope="col">Result</th>
+                <th scope="col">Looks at image</th>
+                <th scope="col">Push before</th>
+                <th scope="col">Push after</th>
               </tr>
             </thead>
             <tbody>
               {rows.map((r) => (
                 <tr key={r.id}>
                   <td>{r.note}</td>
-                  <td>{r.correct ? "✓ correct" : "✗ wrong"}</td>
+                  <td>{r.correct ? "✓ right" : "✗ wrong"}</td>
                   <td>{r.probe.toFixed(2)}</td>
                   <td>{fmt(r.a0)}</td>
                   <td>{fmt(r.ft)}</td>
