@@ -42,7 +42,7 @@ const GROUPS: Record<"partial" | "full", { label: string; question: string; resp
   },
   full: {
     label: "All wrong",
-    question: "An inscribed-angle question on a circle diagram, multiple choice. No answer gets it right.",
+    question: "An inscribed-angle question on a circle diagram (multiple choice).",
     responses: [
       { id: "R1", correct: false, probe: 0.648, note: "Applies the theorem, then guesses" },
       { id: "R2", correct: false, probe: 0.528, note: "60 “wait”s, then the same guess" },
@@ -101,19 +101,6 @@ const BETA = 0.763;
 const fmt = (x: number) => (Math.abs(x) < 0.005 ? "0.00" : `${x >= 0 ? "+" : "−"}${Math.abs(x).toFixed(2)}`);
 const pct = (x: number) => ((x + DOMAIN) / (2 * DOMAIN)) * 100;
 
-const CAPTIONS = {
-  partial: {
-    vanilla:
-      "Plain GRPO only knows right or wrong. All six right answers get the same push, so the one that took ~2,000 words and 41 “wait”s is rewarded exactly as much as the 214-word one.",
-    ft: "FT-GRPO breaks those ties using attention on the image. Right answers that kept looking at the image move up and the loopy ones move down, but every right answer stays above every wrong one, even the wrong answer the probe scored 0.81.",
-  },
-  full: {
-    vanilla:
-      "Every answer is wrong, so they all score the same and the model learns nothing from this question. Before training, 34.4% of question groups were fully tied like this (all right or all wrong).",
-    ft: "FT-GRPO still finds a signal: the short answer the probe scored highest gets pushed up, and the 2,500-word answer with 75 “wait”s gets pushed down hardest.",
-  },
-};
-
 export default function TieBreakFigure() {
   const [groupKey, setGroupKey] = useState<"partial" | "full">("partial");
   const [method, setMethod] = useState<"vanilla" | "ft">("vanilla");
@@ -140,10 +127,7 @@ export default function TieBreakFigure() {
 
   return (
     <figure className="tb" aria-label="Interactive figure: how FT-GRPO breaks reward ties">
-      <p className="tb-intro">
-        A model answers the same question 8 times. Training then pushes each answer
-        <strong> right (do more of this)</strong> or <strong>left (do less)</strong>. Bar length is how hard.
-      </p>
+      <p className="fig-lede">How one group's rewards are reordered within ties using the probe signal.</p>
 
       <div className="tb-controls">
         <div className="tb-seg" role="group" aria-label="Group type">
@@ -163,21 +147,11 @@ export default function TieBreakFigure() {
         </div>
       </div>
 
-      <p className="tb-fine">Question: {group.question}</p>
+      <p className="tb-q">Q: {group.question}</p>
 
       <div className="tb-legend">
         {nCorrect > 0 && <span><i className="tb-key tb-key-correct" aria-hidden="true" />✓ right</span>}
         {nCorrect < rows.length && <span><i className="tb-key tb-key-wrong" aria-hidden="true" />✗ wrong</span>}
-        {showBoundary && (
-          <span><i className="tb-key tb-key-line" aria-hidden="true" />right answers always stay above wrong ones</span>
-        )}
-        <span className="tb-hint">
-          {method === "ft"
-            ? "Hover a row for the numbers"
-            : groupKey === "full"
-              ? "Every push is 0. Click After"
-              : "Click After to see what changes"}
-        </span>
       </div>
 
       <div className="tb-head" aria-hidden="true">
@@ -243,7 +217,7 @@ export default function TieBreakFigure() {
             className="tb-tip"
             role="status"
             style={{
-              // below the row near the top, above it near the bottom so it never covers the caption
+              // below the row near the top, above it near the bottom so it stays inside the figure
               transform:
                 order.indexOf(hoveredRow.id) >= 5
                   ? `translateY(calc(var(--tb-row) * ${order.indexOf(hoveredRow.id)})) translateY(calc(-100% - 4px))`
@@ -258,43 +232,6 @@ export default function TieBreakFigure() {
           </div>
         )}
       </div>
-
-      <figcaption>
-        <p>{CAPTIONS[groupKey][effective]}</p>
-        <p className="tb-fine">
-          The "push" is GRPO's advantage. These are real answers from Qwen3-VL-8B-Thinking before RL, on questions
-          the probe never trained on, with the frozen probe's real scores; the pushes use the paper's formulas
-          (Eq. 3, 8, 9; α = 0.5).
-        </p>
-      </figcaption>
-
-      <details className="tb-table">
-        <summary>View as table</summary>
-        <div className="tb-table-scroll">
-          <table>
-            <thead>
-              <tr>
-                <th scope="col">Answer</th>
-                <th scope="col">Result</th>
-                <th scope="col">Looks at image</th>
-                <th scope="col">Push before</th>
-                <th scope="col">Push after</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((r) => (
-                <tr key={r.id}>
-                  <td>{r.note}</td>
-                  <td>{r.correct ? "✓ right" : "✗ wrong"}</td>
-                  <td>{r.probe.toFixed(2)}</td>
-                  <td>{fmt(r.a0)}</td>
-                  <td>{fmt(r.ft)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </details>
     </figure>
   );
 }

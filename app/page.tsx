@@ -1,3 +1,4 @@
+import BookletFigure from "@/components/BookletFigure";
 import LookLede from "@/components/LookLede";
 import Portrait from "@/components/Portrait";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -128,6 +129,7 @@ export default function Home() {
                 <p className="venue">{pub.venue}</p>
                 <p>{pub.summary}</p>
                 {pub.figure === "tiebreak" && <TieBreakFigure />}
+                {pub.figure === "booklet" && <BookletFigure />}
                 <ul className="chips">
                   {pub.highlights.map((h) => (
                     <li key={h}>{h}</li>

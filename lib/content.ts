@@ -59,7 +59,7 @@ export type Publication = {
   summary: string;
   highlights: string[];
   links: { label: string; href: string }[];
-  figure?: "tiebreak";
+  figure?: "tiebreak" | "booklet";
 };
 
 export const publications: Publication[] = [
@@ -89,6 +89,7 @@ export const publications: Publication[] = [
       "GPT-5-nano solves ARC-AGI v2 puzzles by writing illustrated instruction booklets made of IF-THEN steps. Its reasoning was fully correct on 45.5% of 33 human-annotated puzzles, compared with 0.9% raw benchmark accuracy. Execution then failed in 93.8% of those cases, so the bottleneck is visual execution, not reasoning.",
     highlights: ["45.5% correct reasoning", "93.8% execution failure", "failure-mode taxonomy"],
     links: [{ label: "pdf", href: links.trainloopPaper }],
+    figure: "booklet",
   },
 ];
 
